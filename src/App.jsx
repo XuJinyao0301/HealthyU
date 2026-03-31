@@ -37,6 +37,20 @@ const questions = [
     options: FIVE_OPTIONS,
   },
   {
+    id: "sleep_3",
+    dimension: "Sleep",
+    title:
+      "When I wake up on weekdays, I usually feel rested enough to focus in class.",
+    options: FIVE_OPTIONS,
+  },
+  {
+    id: "sleep_4",
+    dimension: "Sleep",
+    title:
+      "I often delay sleep because of scrolling, gaming, or entertainment.",
+    options: FIVE_OPTIONS,
+  },
+  {
     id: "diet_1",
     dimension: "Diet",
     title:
@@ -48,6 +62,20 @@ const questions = [
     dimension: "Diet",
     title:
       "I often choose convenience food or skip meals because it is faster.",
+    options: FIVE_OPTIONS,
+  },
+  {
+    id: "diet_3",
+    dimension: "Diet",
+    title:
+      "I usually include fruit, vegetables, or protein in at least one main meal each day.",
+    options: FIVE_OPTIONS,
+  },
+  {
+    id: "diet_4",
+    dimension: "Diet",
+    title:
+      "I often drink too little water during the day unless I remind myself.",
     options: FIVE_OPTIONS,
   },
   {
@@ -65,6 +93,20 @@ const questions = [
     options: FIVE_OPTIONS,
   },
   {
+    id: "exercise_3",
+    dimension: "Exercise",
+    title:
+      "I usually walk enough during the day to avoid being inactive for too long.",
+    options: FIVE_OPTIONS,
+  },
+  {
+    id: "exercise_4",
+    dimension: "Exercise",
+    title:
+      "I often go through a whole day with almost no intentional movement because of study pressure.",
+    options: FIVE_OPTIONS,
+  },
+  {
     id: "stress_1",
     dimension: "Stress",
     title:
@@ -76,6 +118,20 @@ const questions = [
     dimension: "Stress",
     title:
       "Even after I stop studying, stress often stays with me for a long time.",
+    options: FIVE_OPTIONS,
+  },
+  {
+    id: "stress_3",
+    dimension: "Stress",
+    title:
+      "I can usually notice when stress is building before it affects my whole day.",
+    options: FIVE_OPTIONS,
+  },
+  {
+    id: "stress_4",
+    dimension: "Stress",
+    title:
+      "When I feel stressed, I often keep it to myself and do nothing about it.",
     options: FIVE_OPTIONS,
   },
   {
@@ -91,14 +147,33 @@ const questions = [
       "I often sacrifice sleep, meals, or rest just to keep up with college life.",
     options: FIVE_OPTIONS,
   },
+  {
+    id: "routine_3",
+    dimension: "Daily Routine",
+    title:
+      "I usually have a workable plan for study, meals, and rest on weekdays.",
+    options: FIVE_OPTIONS,
+  },
+  {
+    id: "routine_4",
+    dimension: "Daily Routine",
+    title:
+      "My schedule often changes so much that healthy habits become hard to keep.",
+    options: FIVE_OPTIONS,
+  },
 ];
 
 const reverseQuestionIds = [
   "sleep_2",
+  "sleep_4",
   "diet_2",
+  "diet_4",
   "exercise_2",
+  "exercise_4",
   "stress_2",
+  "stress_4",
   "routine_2",
+  "routine_4",
 ];
 
 const icons = {
@@ -180,8 +255,17 @@ function buildAdvice(scores) {
       title: "Smarter Eating",
       items: [
         "Avoid skipping breakfast or lunch on busy class days.",
-        "Keep water nearby during study sessions.",
+        "Keep one balanced meal in your day even when work gets heavy.",
         "Aim to replace one convenience meal with a more balanced meal each day.",
+      ],
+    });
+
+    advice.push({
+      title: "Hydration Reminder",
+      items: [
+        "Keep a water bottle nearby during classes or study sessions.",
+        "Try drinking water at regular points in the day instead of waiting until you feel very thirsty.",
+        "Use a simple goal such as refilling your bottle two or three times a day.",
       ],
     });
   }
@@ -223,7 +307,7 @@ function buildAdvice(scores) {
     advice.push({
       title: "Maintain Your Momentum",
       items: [
-        "Keep your current balance of sleep, meals, movement, and stress control.",
+        "Keep your current balance of sleep, meals, movement, stress control, and hydration.",
         "Track one healthy habit each week to stay consistent.",
         "Do not let busy periods erase your routines completely.",
       ],
@@ -436,7 +520,7 @@ export default function App() {
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-2xl font-bold">Introduction & Basic Information</h2>
             <p className="mt-2 max-w-3xl text-slate-600">
-              This website evaluates college students’ sleep, diet, exercise,
+              This website evaluates college students’ sleep, diet, hydration, exercise,
               stress, and daily routine. It then generates a health score, a
               health age, a wellness type, and practical suggestions.
             </p>
@@ -676,7 +760,7 @@ export default function App() {
                   <div className="mt-4 space-y-3 text-sm text-slate-700">
                     {[
                       "Day 1 · Move your bedtime 20 to 30 minutes earlier.",
-                      "Day 2 · Carry a water bottle and finish it at least twice.",
+                      "Day 2 · Carry a water bottle and refill it at least twice.",
                       "Day 3 · Walk or exercise for 25 minutes.",
                       "Day 4 · Eat one balanced meal without rushing.",
                       "Day 5 · Add a short break after each major study block.",
