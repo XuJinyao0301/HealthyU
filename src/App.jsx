@@ -9,6 +9,8 @@ import {
   BookOpen,
   Lightbulb,
   ShieldCheck,
+  UserRound,
+  Sparkles,
 } from "lucide-react";
 
 const FIVE_OPTIONS = [
@@ -119,7 +121,7 @@ function normalizeScore(questionId, value) {
 function getBMI(weight, heightCm) {
   const h = Number(heightCm) / 100;
   const w = Number(weight);
-  if (!h || !w) return null;
+  if (!h || !w || h <= 0 || w <= 0) return null;
   return (w / (h * h)).toFixed(1);
 }
 
@@ -143,17 +145,20 @@ function getLevel(score) {
   return "High Risk";
 }
 
-function getInterpretation(overall, wellnessType, weakest) {
+function getInterpretation(overall, wellnessType, weakest, info) {
+  const name = info.name?.trim() || "Student";
+  const yearText = info.year ? `${info.year.toLowerCase()} student` : "college student";
+
   if (overall >= 82) {
-    return "Your lifestyle looks relatively balanced for college life. You seem to maintain healthier habits across most dimensions.";
+    return `${name}, your lifestyle looks relatively balanced for a ${yearText}. You seem to maintain healthier habits across most dimensions.`;
   }
   if (overall >= 65) {
-    return `Your overall condition is fairly stable, but ${weakest.toLowerCase()} is the main factor pulling your result down.`;
+    return `${name}, your overall condition is fairly stable, but ${weakest.toLowerCase()} is the main factor pulling your result down right now.`;
   }
   if (overall >= 50) {
-    return `Your current pattern suggests strain in daily life. As ${wellnessType}, you may often trade healthy habits for convenience or productivity.`;
+    return `${name}, your current pattern suggests strain in daily life. As ${wellnessType}, you may often trade healthy habits for convenience or productivity.`;
   }
-  return "Your habits appear to be under real pressure. Improving consistency in your routine should be the first priority.";
+  return `${name}, your habits appear to be under real pressure. Improving consistency in your routine should be the first priority.`;
 }
 
 function buildAdvice(scores) {
@@ -228,6 +233,35 @@ function buildAdvice(scores) {
   return advice;
 }
 
+function getPersonalSummary(info, weakest) {
+  const pieces = [];
+
+  if (info.year) {
+    pieces.push(`As a ${info.year.toLowerCase()} student`);
+  } else {
+    pieces.push("As a college student");
+  }
+
+  if (info.age) {
+    pieces.push(`aged ${info.age}`);
+  }
+
+  if (weakest) {
+    pieces.push(`your current weakest area is ${weakest.toLowerCase()}`);
+  }
+
+  return `${pieces.join(", ")}, the most useful next step is building one stable habit and protecting it during busy weeks.`;
+}
+
+function Field({ label, value }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-3">
+      <div className="text-xs uppercase tracking-[0.18em] text-slate-500">{label}</div>
+      <div className="mt-1 text-sm font-semibold text-slate-900">{value || "--"}</div>
+    </div>
+  );
+}
+
 function ScaleRow({ q, answers, setAnswers }) {
   return (
     <div className="mt-6">
@@ -251,13 +285,15 @@ function ScaleRow({ q, answers, setAnswers }) {
           return (
             <div key={label} className="flex flex-1 flex-col items-center">
               <button
+                type="button"
                 onClick={() => setAnswers({ ...answers, [q.id]: value })}
                 className={`${sizeClasses[index]} rounded-full border-2 transition ${
                   isSelected
-                    ? "border-slate-900 bg-slate-900"
-                    : "border-slate-300 bg-white hover:border-slate-500"
+                    ? "border-emerald-600 bg-emerald-500 shadow-[0_0_0_6px_rgba(16,185,129,0.12)]"
+                    : "border-slate-300 bg-white hover:border-emerald-400"
                 }`}
                 title={label}
+                aria-label={`${q.title} - ${label}`}
               />
               <span className="mt-3 text-center text-xs text-slate-600">{label}</span>
             </div>
@@ -276,7 +312,10 @@ function ScoreBar({ label, value }) {
         <span>{value}/100</span>
       </div>
       <div className="h-3 rounded-full bg-slate-100">
-        <div className="h-3 rounded-full bg-slate-900" style={{ width: `${value}%` }} />
+        <div
+          className="h-3 rounded-full bg-emerald-500"
+          style={{ width: `${value}%` }}
+        />
       </div>
     </div>
   );
@@ -329,50 +368,50 @@ export default function App() {
     const sorted = Object.entries(scores).sort((a, b) => a[1] - b[1]);
     const weakest = sorted[0]?.[0] || "Daily Routine";
     const advice = buildAdvice(scores);
-    const interpretation = getInterpretation(overall, wellnessType, weakest);
+    const interpretation = getInterpretation(overall, wellnessType, weakest, info);
+    const personalSummary = getPersonalSummary(info, weakest);
 
-    return { scores, overall, bmi, healthAge, wellnessType, weakest, advice, interpretation };
+    return {
+      scores,
+      overall,
+      bmi,
+      healthAge,
+      wellnessType,
+      weakest,
+      advice,
+      interpretation,
+      personalSummary,
+    };
   }, [answers, info]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">
-                <ShieldCheck className="h-4 w-4" />
-                SDG 3 · Good Health and Well-being
-              </div>
-              <div className="mt-4 flex items-center gap-3">
-                <HeartPulse className="h-9 w-9" />
-                <div>
-                  <h1 className="text-3xl font-bold">CampusPulse</h1>
-                  <p className="text-slate-600">
-                    A health assessment website designed for college students
-                  </p>
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="mb-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-200 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 p-6 text-white">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-sm font-medium text-emerald-300">
+                  <ShieldCheck className="h-4 w-4" />
+                  SDG 3 · Good Health and Well-being
                 </div>
-              </div>
-            </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              {[
-                "Health Score",
-                "Health Age",
-                "Wellness Type",
-                "Actionable Advice",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
-                >
-                  {item}
+                <div className="mt-4 flex items-center gap-3">
+                  <div className="rounded-2xl bg-white/10 p-3">
+                    <HeartPulse className="h-8 w-8 text-emerald-300" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold tracking-tight">CampusPulse</h1>
+                    <p className="mt-1 text-slate-300">
+                      A health assessment website designed for college students
+                    </p>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
 
-          <div className="mt-6 grid gap-3 md:grid-cols-4">
+          <div className="grid gap-3 bg-white p-6 md:grid-cols-4">
             {[
               "1. Intro & Info",
               "2. Scenario Questions",
@@ -381,9 +420,9 @@ export default function App() {
             ].map((item, i) => (
               <div
                 key={item}
-                className={`rounded-2xl border px-4 py-3 text-sm ${
+                className={`rounded-2xl border px-4 py-3 text-sm font-medium ${
                   step === i + 1
-                    ? "border-slate-900 bg-slate-900 text-white"
+                    ? "border-emerald-500 bg-emerald-500 text-white"
                     : "border-slate-200 bg-white text-slate-500"
                 }`}
               >
@@ -404,20 +443,20 @@ export default function App() {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <input
-                className="rounded-2xl border border-slate-200 px-4 py-3"
+                className="rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-emerald-500"
                 placeholder="Name (optional)"
                 value={info.name}
                 onChange={(e) => setInfo({ ...info, name: e.target.value })}
               />
               <input
-                className="rounded-2xl border border-slate-200 px-4 py-3"
+                className="rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-emerald-500"
                 placeholder="Age"
                 type="number"
                 value={info.age}
                 onChange={(e) => setInfo({ ...info, age: e.target.value })}
               />
               <select
-                className="rounded-2xl border border-slate-200 px-4 py-3"
+                className="rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-emerald-500"
                 value={info.gender}
                 onChange={(e) => setInfo({ ...info, gender: e.target.value })}
               >
@@ -428,7 +467,7 @@ export default function App() {
                 <option>Prefer not to say</option>
               </select>
               <select
-                className="rounded-2xl border border-slate-200 px-4 py-3"
+                className="rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-emerald-500"
                 value={info.year}
                 onChange={(e) => setInfo({ ...info, year: e.target.value })}
               >
@@ -440,14 +479,14 @@ export default function App() {
                 <option>Postgraduate</option>
               </select>
               <input
-                className="rounded-2xl border border-slate-200 px-4 py-3"
+                className="rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-emerald-500"
                 placeholder="Height (cm)"
                 type="number"
                 value={info.height}
                 onChange={(e) => setInfo({ ...info, height: e.target.value })}
               />
               <input
-                className="rounded-2xl border border-slate-200 px-4 py-3"
+                className="rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-emerald-500"
                 placeholder="Weight (kg)"
                 type="number"
                 value={info.weight}
@@ -456,10 +495,11 @@ export default function App() {
             </div>
 
             <button
+              type="button"
               onClick={() => infoComplete && setStep(2)}
-              className={`mt-6 rounded-2xl px-5 py-3 font-medium ${
+              className={`mt-6 rounded-2xl px-5 py-3 font-medium transition ${
                 infoComplete
-                  ? "bg-slate-900 text-white"
+                  ? "bg-slate-900 text-white hover:bg-emerald-600"
                   : "cursor-not-allowed bg-slate-300 text-white"
               }`}
             >
@@ -485,7 +525,7 @@ export default function App() {
                   className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
                 >
                   <div className="mb-3 flex items-center gap-2 text-slate-500">
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-5 w-5 text-emerald-600" />
                     <span className="text-sm font-medium">
                       {idx + 1}. {q.dimension}
                     </span>
@@ -497,16 +537,27 @@ export default function App() {
               );
             })}
 
-            <button
-              onClick={() => allAnswered && setStep(3)}
-              className={`rounded-2xl px-5 py-3 font-medium ${
-                allAnswered
-                  ? "bg-slate-900 text-white"
-                  : "cursor-not-allowed bg-slate-300 text-white"
-              }`}
-            >
-              Generate Assessment
-            </button>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600"
+              >
+                Back
+              </button>
+
+              <button
+                type="button"
+                onClick={() => allAnswered && setStep(3)}
+                className={`rounded-2xl px-5 py-3 font-medium transition ${
+                  allAnswered
+                    ? "bg-slate-900 text-white hover:bg-emerald-600"
+                    : "cursor-not-allowed bg-slate-300 text-white"
+                }`}
+              >
+                Generate Assessment
+              </button>
+            </div>
           </div>
         )}
 
@@ -521,7 +572,7 @@ export default function App() {
               <div className="mt-6 grid gap-4 md:grid-cols-4">
                 <div className="rounded-2xl bg-slate-900 p-5 text-white">
                   <div className="text-sm text-slate-300">Health Score</div>
-                  <div className="mt-2 text-4xl font-bold">{result.overall}</div>
+                  <div className="mt-2 text-4xl font-bold text-emerald-300">{result.overall}</div>
                 </div>
                 <div className="rounded-2xl bg-slate-100 p-5">
                   <div className="text-sm text-slate-500">Actual Age</div>
@@ -551,22 +602,32 @@ export default function App() {
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h3 className="text-xl font-semibold">Wellness Type</h3>
                 <div className="mt-4 rounded-2xl bg-slate-900 p-5 text-white">
-                  <div className="text-2xl font-bold">{result.wellnessType}</div>
+                  <div className="text-2xl font-bold text-emerald-300">{result.wellnessType}</div>
                   <p className="mt-2 text-slate-300">
                     A simplified profile based on your lower-scoring health dimension.
                   </p>
                 </div>
 
-                <div className="mt-5 rounded-2xl bg-slate-50 p-4 text-slate-700">
+                <div className="mt-5 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-slate-700">
                   {result.interpretation}
                 </div>
 
-                <button
-                  onClick={() => setStep(4)}
-                  className="mt-6 rounded-2xl bg-slate-900 px-5 py-3 font-medium text-white"
-                >
-                  View Health Advice
-                </button>
+                <div className="mt-6 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    className="rounded-2xl border border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStep(4)}
+                    className="rounded-2xl bg-slate-900 px-5 py-3 font-medium text-white transition hover:bg-emerald-600"
+                  >
+                    View Health Advice
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -582,28 +643,36 @@ export default function App() {
               </p>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="grid gap-6 xl:grid-cols-[1fr_1.45fr]">
               <div className="space-y-6">
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="text-xl font-semibold">Your Summary</h3>
-                  <div className="mt-4 space-y-3">
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="text-sm text-slate-500">Health Score</div>
-                      <div className="mt-1 text-2xl font-bold">{result.overall}/100</div>
+                <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                  <div className="bg-slate-900 p-6 text-white">
+                    <div className="flex items-center gap-2">
+                      <UserRound className="h-5 w-5 text-emerald-300" />
+                      <h3 className="text-xl font-semibold">Personal Profile</h3>
                     </div>
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="text-sm text-slate-500">Health Age</div>
-                      <div className="mt-1 text-2xl font-bold">{result.healthAge}</div>
-                    </div>
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="text-sm text-slate-500">Wellness Type</div>
-                      <div className="mt-1 text-2xl font-bold">{result.wellnessType}</div>
-                    </div>
+                    <p className="mt-3 text-sm leading-6 text-slate-300">
+                      {result.personalSummary}
+                    </p>
+                  </div>
+
+                  <div className="grid gap-3 p-6 sm:grid-cols-2">
+                    <Field label="Name" value={info.name || "Anonymous"} />
+                    <Field label="Age" value={info.age} />
+                    <Field label="Gender" value={info.gender} />
+                    <Field label="Year" value={info.year} />
+                    <Field label="Height" value={info.height ? `${info.height} cm` : "--"} />
+                    <Field label="Weight" value={info.weight ? `${info.weight} kg` : "--"} />
+                    <Field label="BMI" value={result.bmi ?? "--"} />
+                    <Field label="Weakest Area" value={result.weakest} />
                   </div>
                 </div>
 
                 <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="text-xl font-semibold">7-Day Improvement Focus</h3>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-emerald-600" />
+                    <h3 className="text-xl font-semibold">7-Day Improvement Focus</h3>
+                  </div>
                   <div className="mt-4 space-y-3 text-sm text-slate-700">
                     {[
                       "Day 1 · Move your bedtime 20 to 30 minutes earlier.",
@@ -614,7 +683,10 @@ export default function App() {
                       "Day 6 · Reduce late-night screen use before sleep.",
                       "Day 7 · Review which healthy habit was easiest to keep.",
                     ].map((item) => (
-                      <div key={item} className="rounded-2xl bg-slate-50 p-4">
+                      <div
+                        key={item}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
                         {item}
                       </div>
                     ))}
@@ -627,11 +699,17 @@ export default function App() {
                   <h3 className="text-xl font-semibold">Personalized Suggestions</h3>
                   <div className="mt-4 space-y-4">
                     {result.advice.map((block) => (
-                      <div key={block.title} className="rounded-2xl border border-slate-200 p-4">
-                        <div className="font-semibold">{block.title}</div>
+                      <div
+                        key={block.title}
+                        className="rounded-2xl border border-slate-200 p-4"
+                      >
+                        <div className="font-semibold text-emerald-700">{block.title}</div>
                         <ul className="mt-3 space-y-2 text-slate-700">
                           {block.items.map((item) => (
-                            <li key={item} className="rounded-2xl bg-slate-50 px-4 py-3">
+                            <li
+                              key={item}
+                              className="rounded-2xl bg-slate-50 px-4 py-3"
+                            >
                               {item}
                             </li>
                           ))}
@@ -643,13 +721,13 @@ export default function App() {
 
                 <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                   <div className="flex items-center gap-2">
-                    <BookOpen className="h-5 w-5" />
+                    <BookOpen className="h-5 w-5 text-emerald-600" />
                     <h3 className="text-xl font-semibold">Health Knowledge Corner</h3>
                   </div>
                   <div className="mt-4 grid gap-4">
                     <div className="rounded-2xl bg-slate-50 p-4">
                       <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
-                        <Moon className="h-4 w-4" /> Sleep
+                        <Moon className="h-4 w-4 text-emerald-600" /> Sleep
                       </div>
                       <p className="text-sm leading-6 text-slate-700">
                         Sleep duration matters. Teens aged 13 to 17 generally need 8 to 10 hours of sleep,
@@ -660,7 +738,7 @@ export default function App() {
 
                     <div className="rounded-2xl bg-slate-50 p-4">
                       <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
-                        <Dumbbell className="h-4 w-4" /> Exercise
+                        <Dumbbell className="h-4 w-4 text-emerald-600" /> Exercise
                       </div>
                       <p className="text-sm leading-6 text-slate-700">
                         Regular movement protects both physical and mental well-being. A common benchmark for
@@ -671,7 +749,7 @@ export default function App() {
 
                     <div className="rounded-2xl bg-slate-50 p-4">
                       <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
-                        <Salad className="h-4 w-4" /> Hydration & Meals
+                        <Salad className="h-4 w-4 text-emerald-600" /> Hydration & Meals
                       </div>
                       <p className="text-sm leading-6 text-slate-700">
                         Hydration is not only about drinking a lot at once. Drinking regularly through the day is
@@ -682,7 +760,7 @@ export default function App() {
 
                     <div className="rounded-2xl bg-slate-50 p-4">
                       <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
-                        <Brain className="h-4 w-4" /> Stress
+                        <Brain className="h-4 w-4 text-emerald-600" /> Stress
                       </div>
                       <p className="text-sm leading-6 text-slate-700">
                         Stress can affect both mind and body, including concentration, sleep, and energy. Helpful
@@ -695,7 +773,7 @@ export default function App() {
 
                 <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                   <div className="flex items-center gap-2">
-                    <Lightbulb className="h-5 w-5" />
+                    <Lightbulb className="h-5 w-5 text-emerald-600" />
                     <h3 className="text-xl font-semibold">Small Reminder</h3>
                   </div>
                   <p className="mt-3 text-sm leading-6 text-slate-700">
@@ -703,27 +781,38 @@ export default function App() {
                     medical diagnosis tool. If someone has ongoing sleep problems, severe stress, or clear health
                     concerns, they should talk to a qualified professional.
                   </p>
+
+                  <div className="mt-6 flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setStep(3)}
+                      className="rounded-2xl border border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600"
+                    >
+                      Back
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStep(1);
+                        setAnswers({});
+                        setInfo({
+                          name: "",
+                          age: "",
+                          gender: "",
+                          height: "",
+                          weight: "",
+                          year: "",
+                        });
+                      }}
+                      className="rounded-2xl bg-slate-900 px-5 py-3 font-medium text-white transition hover:bg-emerald-600"
+                    >
+                      Restart Demo
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <button
-              onClick={() => {
-                setStep(1);
-                setAnswers({});
-                setInfo({
-                  name: "",
-                  age: "",
-                  gender: "",
-                  height: "",
-                  weight: "",
-                  year: "",
-                });
-              }}
-              className="rounded-2xl bg-slate-900 px-5 py-3 font-medium text-white"
-            >
-              Restart Demo
-            </button>
           </div>
         )}
       </div>
