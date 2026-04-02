@@ -727,173 +727,169 @@ export default function App() {
               </p>
             </div>
 
-            <div className="grid gap-6 xl:grid-cols-[1fr_1.45fr]">
-              <div className="space-y-6">
-                <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-                  <div className="bg-slate-900 p-6 text-white">
-                    <div className="flex items-center gap-2">
-                      <UserRound className="h-5 w-5 text-emerald-300" />
-                      <h3 className="text-xl font-semibold">Personal Profile</h3>
+            <div className="mx-auto max-w-5xl space-y-6">
+              <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                <div className="bg-slate-900 p-6 text-white">
+                  <div className="flex items-center gap-2">
+                    <UserRound className="h-5 w-5 text-emerald-300" />
+                    <h3 className="text-xl font-semibold">Personal Profile</h3>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-slate-300">
+                    {result.personalSummary}
+                  </p>
+                </div>
+
+                <div className="grid gap-3 p-6 sm:grid-cols-2">
+                  <Field label="Name" value={info.name || "Anonymous"} />
+                  <Field label="Age" value={info.age} />
+                  <Field label="Gender" value={info.gender} />
+                  <Field label="Year" value={info.year} />
+                  <Field label="Height" value={info.height ? `${info.height} cm` : "--"} />
+                  <Field label="Weight" value={info.weight ? `${info.weight} kg` : "--"} />
+                  <Field label="BMI" value={result.bmi ?? "--"} />
+                  <Field label="Weakest Area" value={result.weakest} />
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h3 className="text-xl font-semibold">Personalized Suggestions</h3>
+                <div className="mt-4 space-y-4">
+                  {result.advice.map((block) => (
+                    <div
+                      key={block.title}
+                      className="rounded-2xl border border-slate-200 p-4"
+                    >
+                      <div className="font-semibold text-emerald-700">{block.title}</div>
+                      <ul className="mt-3 space-y-2 text-slate-700">
+                        {block.items.map((item) => (
+                          <li
+                            key={item}
+                            className="rounded-2xl bg-slate-50 px-4 py-3"
+                          >
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <p className="mt-3 text-sm leading-6 text-slate-300">
-                      {result.personalSummary}
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-emerald-600" />
+                  <h3 className="text-xl font-semibold">7-Day Improvement Focus</h3>
+                </div>
+                <div className="mt-4 space-y-3 text-sm text-slate-700">
+                  {[
+                    "Day 1 · Move your bedtime 20 to 30 minutes earlier.",
+                    "Day 2 · Carry a water bottle and refill it at least twice.",
+                    "Day 3 · Walk or exercise for 25 minutes.",
+                    "Day 4 · Eat one balanced meal without rushing.",
+                    "Day 5 · Add a short break after each major study block.",
+                    "Day 6 · Reduce late-night screen use before sleep.",
+                    "Day 7 · Review which healthy habit was easiest to keep.",
+                  ].map((item) => (
+                    <div
+                      key={item}
+                      className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-emerald-600" />
+                  <h3 className="text-xl font-semibold">Health Knowledge Corner</h3>
+                </div>
+                <div className="mt-4 grid gap-4">
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
+                      <Moon className="h-4 w-4 text-emerald-600" /> Sleep
+                    </div>
+                    <p className="text-sm leading-6 text-slate-700">
+                      Sleep duration matters. Teens aged 13 to 17 generally need 8 to 10 hours of sleep,
+                      while adults aged 18 to 60 are recommended to get at least 7 hours. Going to bed at
+                      a more regular time often helps recovery and daytime focus.
                     </p>
                   </div>
 
-                  <div className="grid gap-3 p-6 sm:grid-cols-2">
-                    <Field label="Name" value={info.name || "Anonymous"} />
-                    <Field label="Age" value={info.age} />
-                    <Field label="Gender" value={info.gender} />
-                    <Field label="Year" value={info.year} />
-                    <Field label="Height" value={info.height ? `${info.height} cm` : "--"} />
-                    <Field label="Weight" value={info.weight ? `${info.weight} kg` : "--"} />
-                    <Field label="BMI" value={result.bmi ?? "--"} />
-                    <Field label="Weakest Area" value={result.weakest} />
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
+                      <Dumbbell className="h-4 w-4 text-emerald-600" /> Exercise
+                    </div>
+                    <p className="text-sm leading-6 text-slate-700">
+                      Regular movement protects both physical and mental well-being. A common benchmark for
+                      adults is at least 150 minutes of moderate-intensity activity per week, which can be
+                      split into short sessions instead of one long workout.
+                    </p>
                   </div>
-                </div>
 
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-emerald-600" />
-                    <h3 className="text-xl font-semibold">7-Day Improvement Focus</h3>
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
+                      <Salad className="h-4 w-4 text-emerald-600" /> Hydration & Meals
+                    </div>
+                    <p className="text-sm leading-6 text-slate-700">
+                      Hydration is not only about drinking a lot at once. Drinking regularly through the day is
+                      more practical, and pale yellow urine is often used as a simple sign that hydration is in a
+                      reasonable range. Regular meals also support steadier energy.
+                    </p>
                   </div>
-                  <div className="mt-4 space-y-3 text-sm text-slate-700">
-                    {[
-                      "Day 1 · Move your bedtime 20 to 30 minutes earlier.",
-                      "Day 2 · Carry a water bottle and refill it at least twice.",
-                      "Day 3 · Walk or exercise for 25 minutes.",
-                      "Day 4 · Eat one balanced meal without rushing.",
-                      "Day 5 · Add a short break after each major study block.",
-                      "Day 6 · Reduce late-night screen use before sleep.",
-                      "Day 7 · Review which healthy habit was easiest to keep.",
-                    ].map((item) => (
-                      <div
-                        key={item}
-                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
-                      >
-                        {item}
-                      </div>
-                    ))}
+
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
+                      <Brain className="h-4 w-4 text-emerald-600" /> Stress
+                    </div>
+                    <p className="text-sm leading-6 text-slate-700">
+                      Stress can affect both mind and body, including concentration, sleep, and energy. Helpful
+                      coping strategies often include regular sleep, exercise, short breaks, and staying connected
+                      with supportive people instead of carrying pressure alone.
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h3 className="text-xl font-semibold">Personalized Suggestions</h3>
-                  <div className="mt-4 space-y-4">
-                    {result.advice.map((block) => (
-                      <div
-                        key={block.title}
-                        className="rounded-2xl border border-slate-200 p-4"
-                      >
-                        <div className="font-semibold text-emerald-700">{block.title}</div>
-                        <ul className="mt-3 space-y-2 text-slate-700">
-                          {block.items.map((item) => (
-                            <li
-                              key={item}
-                              className="rounded-2xl bg-slate-50 px-4 py-3"
-                            >
-                              {item}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <Lightbulb className="h-5 w-5 text-emerald-600" />
+                  <h3 className="text-xl font-semibold">Small Reminder</h3>
                 </div>
+                <p className="mt-3 text-sm leading-6 text-slate-700">
+                  This website is suitable for health awareness and habit reflection. It should not be used as a
+                  medical diagnosis tool. If someone has ongoing sleep problems, severe stress, or clear health
+                  concerns, they should talk to a qualified professional.
+                </p>
 
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-emerald-600" />
-                    <h3 className="text-xl font-semibold">Health Knowledge Corner</h3>
-                  </div>
-                  <div className="mt-4 grid gap-4">
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
-                        <Moon className="h-4 w-4 text-emerald-600" /> Sleep
-                      </div>
-                      <p className="text-sm leading-6 text-slate-700">
-                        Sleep duration matters. Teens aged 13 to 17 generally need 8 to 10 hours of sleep,
-                        while adults aged 18 to 60 are recommended to get at least 7 hours. Going to bed at
-                        a more regular time often helps recovery and daytime focus.
-                      </p>
-                    </div>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setStep(3)}
+                    className="rounded-2xl border border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600"
+                  >
+                    Back
+                  </button>
 
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
-                        <Dumbbell className="h-4 w-4 text-emerald-600" /> Exercise
-                      </div>
-                      <p className="text-sm leading-6 text-slate-700">
-                        Regular movement protects both physical and mental well-being. A common benchmark for
-                        adults is at least 150 minutes of moderate-intensity activity per week, which can be
-                        split into short sessions instead of one long workout.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
-                        <Salad className="h-4 w-4 text-emerald-600" /> Hydration & Meals
-                      </div>
-                      <p className="text-sm leading-6 text-slate-700">
-                        Hydration is not only about drinking a lot at once. Drinking regularly through the day is
-                        more practical, and pale yellow urine is often used as a simple sign that hydration is in a
-                        reasonable range. Regular meals also support steadier energy.
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-50 p-4">
-                      <div className="mb-2 flex items-center gap-2 font-semibold text-slate-800">
-                        <Brain className="h-4 w-4 text-emerald-600" /> Stress
-                      </div>
-                      <p className="text-sm leading-6 text-slate-700">
-                        Stress can affect both mind and body, including concentration, sleep, and energy. Helpful
-                        coping strategies often include regular sleep, exercise, short breaks, and staying connected
-                        with supportive people instead of carrying pressure alone.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <Lightbulb className="h-5 w-5 text-emerald-600" />
-                    <h3 className="text-xl font-semibold">Small Reminder</h3>
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-700">
-                    This website is suitable for health awareness and habit reflection. It should not be used as a
-                    medical diagnosis tool. If someone has ongoing sleep problems, severe stress, or clear health
-                    concerns, they should talk to a qualified professional.
-                  </p>
-
-                  <div className="mt-6 flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setStep(3)}
-                      className="rounded-2xl border border-slate-200 bg-white px-5 py-3 font-medium text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600"
-                    >
-                      Back
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setStep(1);
-                        setAnswers({});
-                        setInfo({
-                          name: "",
-                          age: "",
-                          gender: "",
-                          height: "",
-                          weight: "",
-                          year: "",
-                        });
-                      }}
-                      className="rounded-2xl bg-slate-900 px-5 py-3 font-medium text-white transition hover:bg-emerald-600"
-                    >
-                      Restart Demo
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep(1);
+                      setAnswers({});
+                      setInfo({
+                        name: "",
+                        age: "",
+                        gender: "",
+                        height: "",
+                        weight: "",
+                        year: "",
+                      });
+                    }}
+                    className="rounded-2xl bg-slate-900 px-5 py-3 font-medium text-white transition hover:bg-emerald-600"
+                  >
+                    Restart Demo
+                  </button>
                 </div>
               </div>
             </div>
